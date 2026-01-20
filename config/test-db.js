@@ -2,7 +2,6 @@ const db = require('./config/db');
 
 console.log('--- Mengetes Koneksi Database ---');
 
-// Melakukan query sederhana untuk cek koneksi
 db.query('SELECT 1 + 1 AS result', (err, results) => {
   if (err) {
     console.error('KESALAHAN KONEKSI:', err.message);
@@ -13,7 +12,6 @@ db.query('SELECT 1 + 1 AS result', (err, results) => {
     console.log('Database siap digunakan.');
   }
   
-  // Menutup koneksi setelah tes selesai
   db.end();
   process.exit();
 });
