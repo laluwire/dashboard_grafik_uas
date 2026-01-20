@@ -14,15 +14,6 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
-// Koneksi database dibuat universal agar jalan di lokal maupun online 
-db.connect((err) => {
-  if (err) {
-    console.error('Gagal koneksi DB:', err.message);
-  } else {
-    console.log('Database terhubung!');
-  }
-});
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server berjalan di port ${PORT}`);
