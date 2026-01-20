@@ -11,8 +11,8 @@ router.get('/mahasiswa', (req, res) => {
   `;
   db.query(sql, (err, results) => {
     if (err) {
-      console.error(err);
-      return res.json([]);
+      console.error("Query Error:", err);
+      return res.status(500).json([]);
     }
     res.json(results);
   });
