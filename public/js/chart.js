@@ -1,10 +1,17 @@
+console.log("File chart.js berhasil dimuat!");
+
 fetch('/api/mahasiswa')
   .then(res => res.json())
   .then(data => {
-    if (!data || data.length === 0) return console.log("Data kosong di API");
+    console.log("Data Mahasiswa untuk Grafik:", data);
+
+    if (!data || data.length === 0) {
+      console.error("Data kosong, tidak bisa gambar grafik.");
+      return;
+    }
 
     const width = 600, height = 400;
-    const margin = { top: 30, right: 30, bottom: 50, left: 60 };
+    const margin = { top: 30, right: 30, bottom: 60, left: 60 };
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     // --- CHART 1 & 6 (Bar Charts) ---
@@ -13,16 +20,17 @@ fetch('/api/mahasiswa')
 
     const drawBar = (id, col) => {
       const svg = d3.select(id);
-      svg.selectAll("*").remove();
+      svg.selectAll("*").remove(); // Bersihkan SVG
       svg.selectAll('rect').data(data).enter().append('rect')
         .attr('x', d => x(d.nama_prodi)).attr('y', d => y(d.total))
         .attr('width', x.bandwidth()).attr('height', d => height - margin.bottom - y(d.total)).attr('fill', col);
       svg.append('g').attr('transform', `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x));
       svg.append('g').attr('transform', `translate(${margin.left},0)`).call(d3.axisLeft(y));
     };
-    drawBar('#chart1', 'steelblue'); drawBar('#chart6', 'crimson');
+    drawBar('#chart1', 'steelblue');
+    drawBar('#chart6', 'crimson');
 
-    // --- CHART 2 (Line) ---
+    // --- CHART 2 (Line Chart) ---
     const svg2 = d3.select('#chart2'); svg2.selectAll("*").remove();
     const xL = d3.scalePoint().domain(data.map(d => d.nama_prodi)).range([margin.left, width - margin.right]);
     svg2.append('path').datum(data).attr('fill', 'none').attr('stroke', 'green').attr('stroke-width', 3)
@@ -38,7 +46,8 @@ fetch('/api/mahasiswa')
       const pie = d3.pie().value(d => d.total);
       g.selectAll('path').data(pie(data)).enter().append('path').attr('d', arc).attr('fill', (d,i) => color(i)).attr('stroke', '#fff');
     };
-    drawPie('#chart3', 0); drawPie('#chart4', 80);
+    drawPie('#chart3', 0); 
+    drawPie('#chart4', 80);
 
     // --- CHART 5 (Horizontal Bar) ---
     const svg5 = d3.select('#chart5'); svg5.selectAll("*").remove();
@@ -49,4 +58,7 @@ fetch('/api/mahasiswa')
       .attr('width', d => xH(d.total) - margin.left).attr('height', yH.bandwidth()).attr('fill', 'orange');
     svg5.append('g').attr('transform', `translate(0,${height - margin.bottom})`).call(d3.axisBottom(xH));
     svg5.append('g').attr('transform', `translate(${margin.left},0)`).call(d3.axisLeft(yH));
-  });
+
+    console.log("Semua grafik berhasil digambar!");
+  })
+  .catch(err => console.error("Error saat menggambar grafik:", err));
