@@ -3,15 +3,7 @@ const router = express.Router();
 const db = require('../config/db');
 
 router.get('/mahasiswa', (req, res) => {
-
-  if (process.env.RAILWAY_ENVIRONMENT) {
-    return res.json([
-      { nama_prodi: 'Informatika', total: 40 },
-      { nama_prodi: 'Sistem Informasi', total: 30 },
-      { nama_prodi: 'Teknik Komputer', total: 20 }
-    ]);
-  }
-
+  // Query SQL untuk mengambil data asli dari database
   const sql = `
     SELECT p.nama_prodi, COUNT(m.id) AS total
     FROM mahasiswa m
@@ -21,8 +13,8 @@ router.get('/mahasiswa', (req, res) => {
 
   db.query(sql, (err, results) => {
     if (err) {
-      console.error(err);
-      return res.json([]); // ⬅️ PENTING: balikin array
+      console.error("Database Error:", err);
+      return res.status(500).json([]);
     }
     res.json(results);
   });
