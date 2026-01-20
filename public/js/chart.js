@@ -1,14 +1,13 @@
 fetch('/api/mahasiswa')
   .then(res => res.json())
   .then(data => {
-    if (!data || data.length === 0) return console.error("Data kosong di database!");
+    if (!data || data.length === 0) return console.error("Data kosong!");
 
     const width = 600, height = 400;
     const margin = { top: 30, right: 30, bottom: 50, left: 60 };
-    const radius = Math.min(width, height) / 2 - 40;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    // --- 1 & 6. BAR CHARTS ---
+    // --- 1 & 6. BAR CHARTS (Tegak) ---
     const x = d3.scaleBand().domain(data.map(d => d.nama_prodi)).range([margin.left, width - margin.right]).padding(0.2);
     const y = d3.scaleLinear().domain([0, d3.max(data, d => d.total)]).nice().range([height - margin.bottom, margin.top]);
 
@@ -35,10 +34,11 @@ fetch('/api/mahasiswa')
 
     // --- 3 & 4. PIE & DONUT ---
     const drawPie = (id, inner) => {
-        const svg = d3.select(id).selectAll('*').remove();
-        const g = d3.select(id).append('g').attr('transform', `translate(${width/2},${height/2})`);
+        const svg = d3.select(id);
+        svg.selectAll('*').remove();
+        const g = svg.append('g').attr('transform', `translate(${width/2},${height/2})`);
         const pie = d3.pie().value(d => d.total);
-        const arc = d3.arc().innerRadius(inner).outerRadius(radius);
+        const arc = d3.arc().innerRadius(inner).outerRadius(150);
         g.selectAll('path').data(pie(data)).enter().append('path').attr('d', arc).attr('fill', (d,i) => color(i)).attr('stroke', '#fff');
     };
     drawPie('#chart3', 0); // Pie
